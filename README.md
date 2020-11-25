@@ -1,2 +1,5 @@
 # AOOSD_Project
-Repository for my project in Advanced Object Oriented Software Development ..
+
+Repository for my project in Advanced Object-Oriented Design Principles & Patterns ..
+
+*Measuring Software Design Quality Using the Reflection API*
