@@ -1,4 +1,4 @@
-# AOOSD_Project
+# Advanced Object-Oriented Design Principles & Patterns Project
 
 Repository for my project in Advanced Object-Oriented Design Principles & Patterns ..
 
