@@ -1,26 +1,30 @@
 package ie.gmit.sw;
 
-import javafx.application.*;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.*;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.stage.*;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Callback;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
 
+import java.io.File;
+import java.io.IOException;
+
+/**
+ * Class App Window
+ *
+ * @author John Shields - G00348436
+ * @version 1.1
+ */
 public class AppWindow extends Application {
+    /**
+     * fields and methods
+     */
     private ObservableList<JarFile> jarFiles;
     private TableView<JarFile> tv;
     private TextField txtFile;
@@ -30,7 +34,7 @@ public class AppWindow extends Application {
         JarFileFactory jf = JarFileFactory.getInstance();
         jarFiles = jf.getJarFiles();
 
-        stage.setTitle("Assignment Application | John Shields - G00348436");
+        stage.setTitle("Jar File Reader App | John Shields - G00348436");
         stage.setWidth(800);
         stage.setHeight(600);
 
@@ -51,12 +55,13 @@ public class AppWindow extends Application {
 
         Button btnAdd = new Button("Add");
         btnAdd.setOnAction(e -> {
-            System.out.println("Jar File Added");
-            jarFiles.add(
-                    new JarFile("New Jar File",
-                            LocalDateTime.of(2021, 1, 1, 0, 0),
-                            Status.Jar, 64)
-            );
+            File f = new File(txtFile.getText());
+            System.out.println("[INFO] File: " + f.getName() + " Added!");
+            try {
+                jarFiles.add(JarFileReader.jarReader());
+            } catch (IOException | ClassNotFoundException ioException) {
+                ioException.printStackTrace();
+            }
         });
         toolBar.getItems().add(btnAdd);
 
@@ -71,18 +76,14 @@ public class AppWindow extends Application {
         box.getChildren().add(getFileChooserPane(stage));
         box.getChildren().add(getTableView());
         box.getChildren().add(toolBar);
-        box.getChildren().add(new PolyPanel());
         // Display the window
         stage.show();
         stage.centerOnScreen();
-
     }
 
     private TitledPane getFileChooserPane(Stage stage) {
         VBox panel = new VBox();
-
         txtFile = new TextField();
-
         FileChooser fc = new FileChooser();
         fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JAR Files", "*.jar"));
 
@@ -90,14 +91,19 @@ public class AppWindow extends Application {
         btnOpen.setOnAction(e -> {
             File f = fc.showOpenDialog(stage);
             txtFile.setText(f.getAbsolutePath());
-    });
+        });
         Button btnProcess = new Button("Process");
         btnProcess.setOnAction(e -> {
             File f = new File(txtFile.getText());
-            System.out.println("[INFO] Processing file " + f.getName());
+            System.out.println("[INFO] Processing file: " + f.getName());
+            System.out.println("File Selected: " + f.exists());
+            System.out.println("Path: " + f.getPath());
+            System.out.println("Absolute path: " + f.getAbsolutePath());
+            System.out.println("Parent: " + f.getParent());
+            System.out.println("File Size in bytes: " + f.length());
             try {
-                jarReader();
-            } catch (IOException ioException) {
+                JarFileReader.jarReader();
+            } catch (IOException | ClassNotFoundException | NoClassDefFoundError ioException) {
                 ioException.printStackTrace();
             }
         });
@@ -118,57 +124,27 @@ public class AppWindow extends Application {
         tv = new TableView<>(jarFiles);
         tv.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        TableColumn<JarFile, String> name = new TableColumn<>("File Name");
-        name.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<JarFile, String>, ObservableValue<String>>() {
+        // read the file names
+        TableColumn<JarFile, String> fileName = new TableColumn<>("File Name");
+        fileName.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<JarFile, String>, ObservableValue<String>>() {
             public ObservableValue<String> call(TableColumn.CellDataFeatures<JarFile, String> p) {
-                return new SimpleStringProperty(p.getValue().name());
+                File f = new File(txtFile.getText());
+                return new SimpleStringProperty(f.getName());
             }
         });
 
-        TableColumn<JarFile, String> fcd = new TableColumn<>("File Creation Date");
-        fcd.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<JarFile, String>, ObservableValue<String>>() {
+        // read the class names
+        TableColumn<JarFile, String> className = new TableColumn<>("Classes");
+        className.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<JarFile, String>, ObservableValue<String>>() {
             public ObservableValue<String> call(TableColumn.CellDataFeatures<JarFile, String> p) {
-                return new SimpleStringProperty(
-                        DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(p.getValue().fcd()));
+                File f = new File(txtFile.getText());
+                return new SimpleStringProperty(f.getClass().getCanonicalName());
             }
         });
-
-        TableColumn<JarFile, String> jar = new TableColumn<>("File Type");
-        jar.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<JarFile, String>, ObservableValue<String>>() {
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<JarFile, String> p) {
-                return new SimpleStringProperty(p.getValue().jar().toString());
-            }
-        });
-
-        TableColumn<JarFile, String> loc = new TableColumn<>("Lines Of Code");
-        loc.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<JarFile, String>, ObservableValue<String>>() {
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<JarFile, String> p) {
-                return new SimpleStringProperty(p.getValue().loc().toString());
-            }
-        });
-
-        tv.getColumns().add(name);
-        tv.getColumns().add(fcd);
-        tv.getColumns().add(jar);
-        tv.getColumns().add(loc);
+        tv.getColumns().add(fileName);
+        tv.getColumns().add(className);
         return tv;
     }
-
-    public static void jarReader() throws IOException {
-        JarInputStream in = new JarInputStream(new FileInputStream("commons-text-1.9.jar"));
-        JarEntry next = in.getNextJarEntry();
-        while (next != null) {
-            if (next.getName().endsWith(".class")) {
-                String name = next.getName().replaceAll("/", "\\.");
-                name = name.replaceAll(".class", "");
-                if (!name.contains("$")) name.substring(0, name.length() - ".class".length());
-                System.out.println(name);
-            }
-            next = in.getNextJarEntry();
-        }
-    }
-
-
 }
 
 

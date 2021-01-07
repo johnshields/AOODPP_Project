@@ -1,7 +1,11 @@
 package ie.gmit.sw;
 
-import java.time.*;
-
-public record JarFile(String name, LocalDateTime fcd, Status jar, Integer loc) {
+/**
+ * Class Jar File
+ *
+ * @author John Shields - G00348436
+ * @version 1.1
+ */
+public record JarFile(String fileName, String classes) {
 }
 
