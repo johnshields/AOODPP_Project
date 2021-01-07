@@ -13,7 +13,11 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 
 /**
  * Class App Window
@@ -30,7 +34,7 @@ public class AppWindow extends Application {
     private TextField txtFile;
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws ClassNotFoundException {
         JarFileFactory jf = JarFileFactory.getInstance();
         jarFiles = jf.getJarFiles();
 
@@ -58,7 +62,7 @@ public class AppWindow extends Application {
             File f = new File(txtFile.getText());
             System.out.println("[INFO] File: " + f.getName() + " Added!");
             try {
-                jarFiles.add(JarFileReader.jarReader());
+                jarFiles.add(JarFileReader.fileName());
             } catch (IOException | ClassNotFoundException ioException) {
                 ioException.printStackTrace();
             }
@@ -81,7 +85,7 @@ public class AppWindow extends Application {
         stage.centerOnScreen();
     }
 
-    private TitledPane getFileChooserPane(Stage stage) {
+    private TitledPane getFileChooserPane(Stage stage) throws ClassNotFoundException, NoClassDefFoundError{
         VBox panel = new VBox();
         txtFile = new TextField();
         FileChooser fc = new FileChooser();
@@ -95,16 +99,42 @@ public class AppWindow extends Application {
         Button btnProcess = new Button("Process");
         btnProcess.setOnAction(e -> {
             File f = new File(txtFile.getText());
-            System.out.println("[INFO] Processing file: " + f.getName());
-            System.out.println("File Selected: " + f.exists());
-            System.out.println("Path: " + f.getPath());
-            System.out.println("Absolute path: " + f.getAbsolutePath());
-            System.out.println("Parent: " + f.getParent());
-            System.out.println("File Size in bytes: " + f.length());
+            JarInputStream in = null;
             try {
-                JarFileReader.jarReader();
-            } catch (IOException | ClassNotFoundException | NoClassDefFoundError ioException) {
+                in = new JarInputStream(new FileInputStream(new File(f.toString())));
+            } catch (IOException ioException) {
                 ioException.printStackTrace();
+            }
+            JarEntry next = null;
+            try {
+                next = in.getNextJarEntry();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            while (next != null) {
+                if (next.getName().endsWith(".class")) {
+                    String name = next.getName().replaceAll("/", "\\.");
+                    name = name.replaceAll(".class", "");
+                    if (!name.contains("$")) name.substring(0, name.length() - ".class".length());
+                    Class cls;
+                    try {
+                        cls = Class.forName(name);
+                        String classname = cls.getName();
+                        String pack = cls.getPackageName().toString();
+                        JarFile jf = new JarFile(classname, pack);
+                        jarFiles.add(jf);
+                    } catch (ClassNotFoundException classNotFoundException) {
+                        classNotFoundException.printStackTrace();
+                    } catch (NoClassDefFoundError noClassDefFoundError) {
+                        //catch the no class defer error
+                    }
+                    System.out.println(name);
+                }
+                try {
+                    next = in.getNextJarEntry();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
             }
         });
 
@@ -133,16 +163,24 @@ public class AppWindow extends Application {
             }
         });
 
-        // read the class names
-        TableColumn<JarFile, String> className = new TableColumn<>("Classes");
-        className.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<JarFile, String>, ObservableValue<String>>() {
+        // read the jar names
+        TableColumn<JarFile, String> jarName = new TableColumn<>("Jar Name");
+        jarName.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<JarFile, String>, ObservableValue<String>>() {
             public ObservableValue<String> call(TableColumn.CellDataFeatures<JarFile, String> p) {
-                File f = new File(txtFile.getText());
-                return new SimpleStringProperty(f.getClass().getCanonicalName());
+                return new SimpleStringProperty(p.getValue().classname());
             }
         });
-        tv.getColumns().add(fileName);
-        tv.getColumns().add(className);
+
+        // read the jar names
+        TableColumn<JarFile, String> packageName = new TableColumn<>("Package Name");
+        packageName.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<JarFile, String>, ObservableValue<String>>() {
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<JarFile, String> p) {
+                return new SimpleStringProperty(p.getValue().packageName());
+            }
+        });
+        //tv.getColumns().add(fileName);
+        tv.getColumns().add(jarName); // classname
+        tv.getColumns().add(packageName);
         return tv;
     }
 }

@@ -15,7 +15,7 @@ public class JarFileFactory {
 
     private JarFileFactory() {
         model = FXCollections.observableArrayList(
-                new JarFile("hello-world.jar", "Classes")
+                new JarFile("class", "pack-name")
         );
     }
 
