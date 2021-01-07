@@ -116,11 +116,11 @@ public class AppWindow extends Application {
                     String name = next.getName().replaceAll("/", "\\.");
                     name = name.replaceAll(".class", "");
                     if (!name.contains("$")) name.substring(0, name.length() - ".class".length());
-                    Class cls;
+                    String cls = getClass().getName();
                     try {
-                        cls = Class.forName(name);
-                        String classname = cls.getName();
-                        String pack = cls.getPackageName().toString();
+                        Class<?> class_cls = Class.forName(cls);
+                        String classname = class_cls.getName();
+                        String pack = class_cls.getPackageName();
                         JarFile jf = new JarFile(classname, pack);
                         jarFiles.add(jf);
                     } catch (ClassNotFoundException classNotFoundException) {
