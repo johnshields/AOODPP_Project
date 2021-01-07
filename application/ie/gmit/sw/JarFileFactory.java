@@ -10,7 +10,7 @@ public class JarFileFactory {
 
     private JarFileFactory() {
         model = FXCollections.observableArrayList (
-                new JarFile("jar_file1", LocalDateTime.of(2021, 1, 1, 0, 0), Status.Default)
+                new JarFile("jar_file1", LocalDateTime.of(2021, 1, 1, 0, 0), Status.Jar, 64)
         );
     }
     public static JarFileFactory getInstance() {

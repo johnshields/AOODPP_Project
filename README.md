@@ -1,7 +1,9 @@
 ## Advanced Object-Oriented Design Principles & Patterns Project
 
-Repository for my project in Advanced Object-Oriented Design Principles & Patterns...
+#### John Shields - G00348436
 
-#### *Measuring Software Design Quality Using the Reflection API*
+Repository for the main assignment in the module  Advanced Object-Oriented Design Principles & Patterns...
 
-Java application that uses reflection to analyse an arbitrary Java Application Archive (JAR) and calculates one or more design and structural metrics for each of the component classes in its object graph. 
+### *Measuring Software Design Quality Using the Reflection API*
+
+Java application that uses reflection to analyse an arbitrary Java Application Archive (JAR) and calculates one or more design and structural metrics for each of the component classes in its object graph.
