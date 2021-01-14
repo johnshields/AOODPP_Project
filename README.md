@@ -1,8 +1,9 @@
 # Metrics Application 
 #### John Shields - G00348436
 
-## Advanced Object-Oriented Design Principles & Patterns Project
-### *Measuring Software Design Quality Using the Reflection API*
+<p align="center">
+<img src="https://i.ibb.co/dgfdK1p/OOP-Main-Project.jpg">
+</p>
 Java application that uses reflection to analyse an arbitrary Java Application Archive (JAR) and calculates one or more design and structural metrics for each of the component classes in its object graph.
 
 ## The App
