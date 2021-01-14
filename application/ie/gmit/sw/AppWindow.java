@@ -1,8 +1,8 @@
 package ie.gmit.sw;
 
 import javafx.application.Application;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -10,35 +10,34 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
 /**
- * Class App Window
+ * App Window
+ * Is a controller for the GUI which loads the jar's classes from JarClassLoader.
  *
  * @author John Shields - G00348436
- * @version 1.1
+ * @version 1.0
  */
 public class AppWindow extends Application {
-    /**
-     * fields and methods
-     */
-    private ObservableList<JarFile> jarFiles;
-    private TableView<JarFile> tv;
+    // Fields and methods
+    private final JarFileProcessor jarFileProcessor = new JarFileProcessor();
+    private ObservableList<JarFiler> jarFiles;
+    private TableView<JarFiler> tv;
     private TextField txtFile;
+    private String absolutePath;
 
     @Override
-    public void start(Stage stage) throws ClassNotFoundException {
+    public void start(Stage stage) {
+
         JarFileFactory jf = JarFileFactory.getInstance();
         jarFiles = jf.getJarFiles();
 
-        stage.setTitle("Jar File Reader App | John Shields - G00348436");
+        stage.setTitle("Metrics App");
         stage.setWidth(800);
         stage.setHeight(600);
 
@@ -57,86 +56,80 @@ public class AppWindow extends Application {
         btnQuit.setOnAction(e -> System.exit(0));
         toolBar.getItems().add(btnQuit);
 
-        Button btnAdd = new Button("Add");
-        btnAdd.setOnAction(e -> {
-            File f = new File(txtFile.getText());
-            System.out.println("[INFO] File: " + f.getName() + " Added!");
-            try {
-                jarFiles.add(JarFileReader.fileName());
-            } catch (IOException | ClassNotFoundException ioException) {
-                ioException.printStackTrace();
-            }
-        });
-        toolBar.getItems().add(btnAdd);
-
-        Button btnDelete = new Button("Delete");
-        btnDelete.setOnAction(e -> {
-            System.out.println("Jar File Deleted");
-            JarFile jrf = tv.getSelectionModel().getSelectedItem();
-            jarFiles.remove(jrf);
-        });
-        toolBar.getItems().add(btnDelete);
-
         box.getChildren().add(getFileChooserPane(stage));
         box.getChildren().add(getTableView());
         box.getChildren().add(toolBar);
-        // Display the window
+
+        // Display the app window
         stage.show();
         stage.centerOnScreen();
     }
 
-    private TitledPane getFileChooserPane(Stage stage) throws ClassNotFoundException, NoClassDefFoundError{
+    /**
+     * Method to create File Chooser Pane
+     * @param stage
+     * @return {@link TitledPane}
+     */
+    private TitledPane getFileChooserPane(Stage stage) {
+        // Getting the Singleton instance from JarFileFactory
+        JarFileFactory jf = JarFileFactory.getInstance();
+        jarFiles = jf.getJarFiles();
+
+        // A concrete strategy
         VBox panel = new VBox();
-        txtFile = new TextField();
-        FileChooser fc = new FileChooser();
+        txtFile = new TextField(); // A leaf node
+
+
+        FileChooser fc = new FileChooser(); //A leaf node
         fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JAR Files", "*.jar"));
 
-        Button btnOpen = new Button("Select File");
-        btnOpen.setOnAction(e -> {
+        Button btnOpen = new Button("Select File"); // A leaf node
+        btnOpen.setOnAction(e -> { // Plant an observer on the button
             File f = fc.showOpenDialog(stage);
+
             txtFile.setText(f.getAbsolutePath());
+            absolutePath = f.getAbsolutePath();
         });
-        Button btnProcess = new Button("Process");
-        btnProcess.setOnAction(e -> {
+
+        Button btnProcess = new Button("Process"); //A leaf node
+
+        btnProcess.setOnAction(e -> { // Plant an observer on the button
+            // Variables
             File f = new File(txtFile.getText());
-            JarInputStream in = null;
+            JarInputStream jarInputStream = null;
+
+            System.out.println("[INFO] Processing file " + f.getName());
+
+             // Try Catch to have an exception when a jar file has not been selected
             try {
-                in = new JarInputStream(new FileInputStream(new File(f.toString())));
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
+                jarInputStream = new JarInputStream(new FileInputStream(new File(f.toString())));
+            } catch (IOException exception) {
+                System.out.println("Error opening file provided. Please check jar and try again.");
             }
+
             JarEntry next = null;
+
             try {
-                next = in.getNextJarEntry();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
+                next = jarInputStream.getNextJarEntry();
+            } catch (IOException exception) {
+                System.out.println("Error opening file provided. Please check jar and try again.");
             }
+
             while (next != null) {
-                if (next.getName().endsWith(".class")) {
-                    String name = next.getName().replaceAll("/", "\\.");
-                    name = name.replaceAll(".class", "");
-                    if (!name.contains("$")) name.substring(0, name.length() - ".class".length());
-                    String cls = getClass().getName();
-                    try {
-                        Class<?> class_cls = Class.forName(cls);
-                        String classname = class_cls.getName();
-                        String pack = class_cls.getPackageName();
-                        JarFile jf = new JarFile(classname, pack);
-                        jarFiles.add(jf);
-                    } catch (ClassNotFoundException classNotFoundException) {
-                        classNotFoundException.printStackTrace();
-                    } catch (NoClassDefFoundError noClassDefFoundError) {
-                        //catch the no class defer error
-                    }
-                    System.out.println(name);
-                }
+                // Load class's from jar and add entries to list...
+                JarFiler temp = jarFileProcessor.loadClass(next, absolutePath);
+
+                // Check for null as returns as we dont want to add them to the list
+                if (temp != null) jarFiles.add(temp);
+
                 try {
-                    next = in.getNextJarEntry();
+                    next = jarInputStream.getNextJarEntry();
                 } catch (IOException ioException) {
-                    ioException.printStackTrace();
+                    System.out.println("IO Exception while trying to open jar");
                 }
-            }
+            }// End while
         });
+
 
         ToolBar tb = new ToolBar();
         tb.getItems().add(btnOpen);
@@ -148,39 +141,34 @@ public class AppWindow extends Application {
         TitledPane tp = new TitledPane("Select File to Process", panel);
         tp.setCollapsible(false);
         return tp;
-    }
+    }// End getFileChooserPane method
 
-    private TableView<JarFile> getTableView() {
+    /**
+     * Method to create the table view for the GUI
+     * @return {@link TableView}
+     */
+    private TableView<JarFiler> getTableView() {
         tv = new TableView<>(jarFiles);
         tv.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // read the file names
-        TableColumn<JarFile, String> fileName = new TableColumn<>("File Name");
-        fileName.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<JarFile, String>, ObservableValue<String>>() {
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<JarFile, String> p) {
-                File f = new File(txtFile.getText());
-                return new SimpleStringProperty(f.getName());
-            }
-        });
+        // Tables Columns
+        TableColumn<JarFiler, String> classNames = new TableColumn<>("Class Name");
+        TableColumn<JarFiler, String> packageNames = new TableColumn<>("Package Name");
+        TableColumn<JarFiler, Number> loc = new TableColumn<>("LOC");
 
-        // read the jar names
-        TableColumn<JarFile, String> jarName = new TableColumn<>("Jar Name");
-        jarName.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<JarFile, String>, ObservableValue<String>>() {
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<JarFile, String> p) {
-                return new SimpleStringProperty(p.getValue().classname());
-            }
-        });
+        //Print each class name
+        jarFiles.forEach(jarFile -> System.out.println(jarFile.className()));
 
-        // read the jar names
-        TableColumn<JarFile, String> packageName = new TableColumn<>("Package Name");
-        packageName.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<JarFile, String>, ObservableValue<String>>() {
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<JarFile, String> p) {
-                return new SimpleStringProperty(p.getValue().packageName());
-            }
-        });
-        //tv.getColumns().add(fileName);
-        tv.getColumns().add(jarName); // classname
-        tv.getColumns().add(packageName);
+        // Get data for each column
+        classNames.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().className()));
+        packageNames.setCellValueFactory(pn -> new SimpleStringProperty(pn.getValue().packageName()));
+        loc.setCellValueFactory(lo -> new SimpleIntegerProperty(lo.getValue().loc()));
+
+        // Add columns to table view
+        tv.getColumns().add(classNames);
+        tv.getColumns().add(packageNames);
+        tv.getColumns().add(loc);
+
         return tv;
     }
 }

@@ -4,26 +4,26 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
- * Class Jar File Factory
+ * Jar File Factory
+ * Singleton that creates a model for the Jar files.
  *
  * @author John Shields - G00348436
- * @version 1.1
+ * @version 1.0
  */
 public class JarFileFactory {
     private static final JarFileFactory jf = new JarFileFactory();
-    private final ObservableList<JarFile> model;
+    private ObservableList<JarFiler> model;
 
+    // pass in file info here when call on this factory class
     private JarFileFactory() {
-        model = FXCollections.observableArrayList(
-                new JarFile("class", "pack-name")
-        );
+        model = FXCollections.observableArrayList();
     }
 
     public static JarFileFactory getInstance() {
         return jf;
     }
 
-    public ObservableList<JarFile> getJarFiles() {
+    public ObservableList<JarFiler> getJarFiles() {
         return model;
     }
 }
