@@ -6,7 +6,7 @@ import java.io.IOException;
 
 /**
  * Runner
- * Launches the GUI from AppWindow.
+ * Launches the GUI from App Window.
  *
  * @author John Shields - G00348436
  * @version 1.0

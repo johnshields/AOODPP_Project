@@ -18,7 +18,7 @@ import java.util.jar.JarInputStream;
 
 /**
  * App Window
- * Is a controller for the GUI which loads the jar's classes from JarClassLoader.
+ * Is a controller for the GUI which loads the jar's classes from Jar File Processor.
  *
  * @author John Shields - G00348436
  * @version 1.0
