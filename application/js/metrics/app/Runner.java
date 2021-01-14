@@ -1,4 +1,4 @@
-package ie.gmit.sw;
+package js.metrics.app;
 
 import javafx.application.Application;
 
