@@ -1,5 +1,5 @@
 # Metrics Application 
-#### John Shields
+#### John Shields - G00348436
 
 ## Advanced Object-Oriented Design Principles & Patterns Project
 ### *Measuring Software Design Quality Using the Reflection API*
