@@ -10,7 +10,7 @@ JavaFX App that processes Jar Files to read and print their Class Names, Package
 ###### Make sure the Jar Files are in the Class Path.
 
 
-The Design Rationale can be found [here](https://github.com/johnshields/Metrics-App/wiki/Design-Rationale).
+The Design Rationale can be found [here](https://github.com/johnshields/OOP-Metrics-App/wiki).
 
 ## Development Environment 
 * Java JDK Version: 15
