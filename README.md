@@ -9,6 +9,9 @@ Java application that uses reflection to analyse an arbitrary Java Application A
 JavaFX App that processes Jar Files to read and print their Class Names, Package Names, and the Lines of Code on a GUI.
 ###### Make sure the Jar Files are in the Class Path.
 
+
+The Design Rationale can be found [here](https://github.com/johnshields/Metrics-App/wiki/Design-Rationale).
+
 ## Development Environment 
 * Java JDK Version: 15
 * Java FX SDK Version: 15.0.1
