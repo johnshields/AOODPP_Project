@@ -27,7 +27,7 @@ The Design Rationale can be found [here](https://github.com/johnshields/Metrics-
 
 ### Open a directory of your choice in Command-Line and enter:
 ```cmd
-$ git clone https://github.com/johnshields/Metrics-App.git
+$ git clone https://github.com/johnshields/OOP-Metrics-App.git
  ```
 ### Open the repository directory in Command-Line and enter:
 ```java
