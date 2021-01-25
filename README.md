@@ -19,7 +19,7 @@ The Design Rationale can be found [here](https://github.com/johnshields/OOP-Metr
 * Java JDK Version: 15
 * Java FX SDK Version: 15.0.1
 * OS Name: Microsoft Windows 10
-* Intellij IDE 2020.3.1 (Professional Edition)
+* Intellij IDE 2020.3.1 (IDEA Ultimate)
 
 ***
 ## Run the App 
