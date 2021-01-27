@@ -12,7 +12,7 @@
 | **Course**              | BSc (Hons) in Software Development |
 | **Module**              | Advanced Object-Oriented Design Principles & Patterns |
 | **Institute**           | [Galway-Mayo Institute of Technology](https://www.gmit.ie/) |
-| **Students**            | [John Shields](https://github.com/johnshields) |
+| **Student**            | [John Shields](https://github.com/johnshields) |
 | **Module Lecturer**     | John Healy |
 | **Grade Achieved**      | 61% |
 ***
