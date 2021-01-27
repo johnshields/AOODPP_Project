@@ -7,7 +7,7 @@
 </p>
 
 ## Project Details
-| **Project Title** | A Bayou-Space Odyssey |
+| **Project Title** | Metrics Application |
 | :------------- |:-------------|
 | **Course**              | BSc (Hons) in Software Development |
 | **Module**              | Advanced Object-Oriented Design Principles & Patterns |
