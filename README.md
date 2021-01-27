@@ -6,6 +6,17 @@
 <img src="https://i.ibb.co/dgfdK1p/OOP-Main-Project.jpg">
 </p>
 
+## Project Details
+| **Project Title** | A Bayou-Space Odyssey |
+| :------------- |:-------------|
+| **Course**              | BSc (Hons) in Software Development |
+| **Module**              | Advanced Object-Oriented Design Principles & Patterns |
+| **Institute**           | [Galway-Mayo Institute of Technology](https://www.gmit.ie/) |
+| **Students**            | [John Shields](https://github.com/johnshields) |
+| **Module Lecturer**     | John Healy |
+| **Grade Achieved**      | 61% |
+***
+
 
 ## The App
 Java application that uses reflection to analyse an arbitrary Java Application Archive (JAR) and calculates design and structural metrics for each of the component classes in its object graph.
