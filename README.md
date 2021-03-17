@@ -3,7 +3,7 @@
 ***
 
 <p align="center">
-<img src="https://i.ibb.co/dgfdK1p/OOP-Main-Project.jpg">
+<img src="https://user-images.githubusercontent.com/26766163/111549066-7fcc0d00-8773-11eb-8422-fef2515724f5.png">
 </p>
 
 ## Project Details
